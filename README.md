@@ -1,12 +1,17 @@
 # Port Shifter
 
-A port replacer (or resetter) for app.toml and config.toml files, used in Tendermint or CometBFT-based protocols.
+A port replacer (or resetter) for ~app.toml~ and config.toml files, used in Tendermint or CometBFT-based protocols.
 
 This has been written by ZENODE and is licensed under the MIT-license (see [LICENSE.md](./LICENSE.md)).
 
+> [!IMPORTANT]
+> This branch is for **Namada's config scheme**. Point towards the folder containing the main `config.toml` file (ex: ~/.local/share/namada/_[chain-id]_).
+>
+> Tested up till Namada **v0.28.2** for _public-testnet-15.0dacadb8d663_.
+
 ## Overview
 
-It can get quite time-consuming to replace the ports inside of the `app.toml` or `config.toml` files if you plan on running multiple nodes. This small repository aims to solve this problem by providing two scripts; both having the same purpose of simplifying the process of replacing the port values.
+It can get quite time-consuming to replace the ports inside of the ~`app.toml`~ or `config.toml` files if you plan on running multiple nodes. This small repository aims to solve this problem by providing two scripts; both having the same purpose of simplifying the process of replacing the port values.
 
 ### 1. [shift-wizard.sh](shift-wizard.sh)
 
