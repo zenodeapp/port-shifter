@@ -5,7 +5,7 @@
 
 # This is a simplified version of the shifter, for those who
 # are not fond of running (foreign) scripts. It's only capable
-# of incrementing the ports by a common factor, but can be edi-
+# of incrementing the ports by a common value, but can be edi-
 # ted for individual port adjustment.
 
 # Check if the correct number of arguments is provided
