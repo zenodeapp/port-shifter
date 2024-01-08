@@ -19,7 +19,7 @@ sh shift-wizard.sh
 ```
 
 > [!TIP]
-> If you made a mess of all your ports, you can **reset the ports to their default values** by giving it an **increment** of **0**.
+> If you made a mess of all your ports, then you can **reset the ports to their default values** by giving it an **increment** of **0**.
 
 ### 2. [quick-shift.sh](quick-shift.sh)
 
