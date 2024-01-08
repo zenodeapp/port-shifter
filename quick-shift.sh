@@ -1,5 +1,5 @@
 
-# PORT SHIFTER for app.toml and config.toml files.
+# PORT SHIFTER for Namada-based config.toml file scheme.
 # https://github.com/zenodeapp/port-shifter
 # ZENODE (https://zenode.app)
 
@@ -10,7 +10,7 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <path_to_config_files> [port_increment_value]"
+    echo "Usage: $0 <path_to_config_file> [port_increment_value]"
     echo "  [port_increment_value] is optional (default: 0, which will reset ports to default)"
     echo ""
     exit 1
