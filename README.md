@@ -37,7 +37,7 @@ sh quick-shift.sh <path_to_config_files> [port_increment_value]
 ### for port replacement
 
 > [!IMPORTANT]
-> These scripts make a backup of the _.toml_ files (as _.toml.bak_ files), but do not take in account what ports were already configured _when incrementing_. Therefore the new ports get calculated **using the default port values stated in the script itself** and **not** what you _already_ had configured.
+> These scripts make a backup of the _.toml_ files (as _.toml.bak_), but do not take in account what ports were already configured _when incrementing_. Therefore the new ports get calculated **using the default port values stated in the script itself** and **not** what you _already_ had configured.
 
 The logic for the _sed_-commands is to always look for the last colon (:). That way we only replace the _:port_ part, without having to worry about overwriting pre-configured ip-addresses that use _localhost_, _IPv4_ or _IPv6_ formatted addresses or protocols like _https://_ and _tcp://_.
 
