@@ -4,7 +4,7 @@
 # ZENODE (https://zenode.app)
 
 # This wizard can either increment all ports by a common value or 
-# let the user customize every port individually. If you do not trust
+# let the user customize each port individually. If you do not trust
 # this wizard or prefer a simpler variant, use quick-shift.sh instead.
 
 read -p "What's the path to the config files? (example: ~/.gaia/config): " CONFIG_PATH
