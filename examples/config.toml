@@ -1,471 +1,125 @@
-# This is a TOML config file.
-# For more information, see https://github.com/toml-lang/toml
+wasm_dir = "wasm"
 
-# NOTE: Any path below can be absolute (e.g. "/var/myawesomeapp/data") or
-# relative to the home directory (e.g. "data"). The home directory is
-# "$HOME/.cometbft" by default, but could be changed via $CMTHOME env variable
-# or --home cmd flag.
+[ledger]
+genesis_time = "2023-12-18T17:00:00+00:00"
+chain_id = "public-testnet-15.0dacadb8d663"
 
-#######################################################################
-###                   Main Base Config Options                      ###
-#######################################################################
+[ledger.shell]
+base_dir = "/root/.local/share/namada"
+storage_read_past_height_limit = 3600
+db_dir = "db"
+cometbft_dir = "cometbft"
+tendermint_mode = "Validator"
 
-# TCP or UNIX socket address of the ABCI application,
-# or the name of an ABCI application compiled in with the CometBFT binary
+[ledger.cometbft]
 proxy_app = "tcp://127.0.0.1:26658"
-
-# A custom human readable name for this node
 moniker = ""
-
-# If this node is many blocks behind the tip of the chain, FastSync
-# allows them to catchup quickly by downloading blocks in parallel
-# and verifying their commits
 fast_sync = true
-
-# Database backend: goleveldb | cleveldb | boltdb | rocksdb | badgerdb
-# * goleveldb (github.com/syndtr/goleveldb - most popular implementation)
-#   - pure go
-#   - stable
-# * cleveldb (uses levigo wrapper)
-#   - fast
-#   - requires gcc
-#   - use cleveldb build tag (go build -tags cleveldb)
-# * boltdb (uses etcd's fork of bolt - github.com/etcd-io/bbolt)
-#   - EXPERIMENTAL
-#   - may be faster is some use-cases (random reads - indexer)
-#   - use boltdb build tag (go build -tags boltdb)
-# * rocksdb (uses github.com/tecbot/gorocksdb)
-#   - EXPERIMENTAL
-#   - requires gcc
-#   - use rocksdb build tag (go build -tags rocksdb)
-# * badgerdb (uses github.com/dgraph-io/badger)
-#   - EXPERIMENTAL
-#   - use badgerdb build tag (go build -tags badgerdb)
 db_backend = "goleveldb"
-
-# Database directory
 db_dir = "data"
-
-# Output level for logging, including package level options
 log_level = "info"
-
-# Output format: 'plain' (colored text) or 'json'
 log_format = "plain"
-
-##### additional base config options #####
-
-# Path to the JSON file containing the initial validator set and other meta data
 genesis_file = "config/genesis.json"
-
-# Path to the JSON file containing the private key to use as a validator in the consensus protocol
 priv_validator_key_file = "config/priv_validator_key.json"
-
-# Path to the JSON file containing the last sign state of a validator
 priv_validator_state_file = "data/priv_validator_state.json"
-
-# TCP or UNIX socket address for CometBFT to listen on for
-# connections from an external PrivValidator process
 priv_validator_laddr = ""
-
-# Path to the JSON file containing the private key to use for node authentication in the p2p protocol
 node_key_file = "config/node_key.json"
-
-# Mechanism to connect to the ABCI application: socket | grpc
 abci = "socket"
-
-# If true, query the ABCI app on connecting to a new peer
-# so the app can decide if we should keep the connection or not
 filter_peers = false
 
-
-#######################################################################
-###                 Advanced Configuration Options                  ###
-#######################################################################
-
-#######################################################
-###       RPC Server Configuration Options          ###
-#######################################################
-[rpc]
-
-# TCP or UNIX socket address for the RPC server to listen on
+[ledger.cometbft.rpc]
 laddr = "tcp://127.0.0.1:26657"
-
-# A list of origins a cross-domain request can be executed from
-# Default value '[]' disables cors support
-# Use '["*"]' to allow any origin
 cors_allowed_origins = []
-
-# A list of methods the client is allowed to use with cross-domain requests
-cors_allowed_methods = ["HEAD", "GET", "POST", ]
-
-# A list of non simple headers the client is allowed to use with cross-domain requests
-cors_allowed_headers = ["Origin", "Accept", "Content-Type", "X-Requested-With", "X-Server-Time", ]
-
-# TCP or UNIX socket address for the gRPC server to listen on
-# NOTE: This server only supports /broadcast_tx_commit
+cors_allowed_methods = ["HEAD", "GET", "POST"]
+cors_allowed_headers = ["Origin", "Accept", "Content-Type", "X-Requested-With", "X-Server-Time"]
 grpc_laddr = ""
-
-# Maximum number of simultaneous connections.
-# Does not include RPC (HTTP&WebSocket) connections. See max_open_connections
-# If you want to accept a larger number than the default, make sure
-# you increase your OS limits.
-# 0 - unlimited.
-# Should be < {ulimit -Sn} - {MaxNumInboundPeers} - {MaxNumOutboundPeers} - {N of wal, db and other open files}
-# 1024 - 40 - 10 - 50 = 924 = ~900
 grpc_max_open_connections = 900
-
-# Activate unsafe RPC commands like /dial_seeds and /unsafe_flush_mempool
 unsafe = false
-
-# Maximum number of simultaneous connections (including WebSocket).
-# Does not include gRPC connections. See grpc_max_open_connections
-# If you want to accept a larger number than the default, make sure
-# you increase your OS limits.
-# 0 - unlimited.
-# Should be < {ulimit -Sn} - {MaxNumInboundPeers} - {MaxNumOutboundPeers} - {N of wal, db and other open files}
-# 1024 - 40 - 10 - 50 = 924 = ~900
 max_open_connections = 900
-
-# Maximum number of unique clientIDs that can /subscribe
-# If you're using /broadcast_tx_commit, set to the estimated maximum number
-# of broadcast_tx_commit calls per block.
 max_subscription_clients = 100
-
-# Maximum number of unique queries a given client can /subscribe to
-# If you're using GRPC (or Local RPC client) and /broadcast_tx_commit, set to
-# the estimated # maximum number of broadcast_tx_commit calls per block.
 max_subscriptions_per_client = 5
-
-# Experimental parameter to specify the maximum number of events a node will
-# buffer, per subscription, before returning an error and closing the
-# subscription. Must be set to at least 100, but higher values will accommodate
-# higher event throughput rates (and will use more memory).
-experimental_subscription_buffer_size = 200
-
-# Experimental parameter to specify the maximum number of RPC responses that
-# can be buffered per WebSocket client. If clients cannot read from the
-# WebSocket endpoint fast enough, they will be disconnected, so increasing this
-# parameter may reduce the chances of them being disconnected (but will cause
-# the node to use more memory).
-#
-# Must be at least the same as "experimental_subscription_buffer_size",
-# otherwise connections could be dropped unnecessarily. This value should
-# ideally be somewhat higher than "experimental_subscription_buffer_size" to
-# accommodate non-subscription-related RPC responses.
-experimental_websocket_write_buffer_size = 200
-
-# If a WebSocket client cannot read fast enough, at present we may
-# silently drop events instead of generating an error or disconnecting the
-# client.
-#
-# Enabling this experimental parameter will cause the WebSocket connection to
-# be closed instead if it cannot read fast enough, allowing for greater
-# predictability in subscription behaviour.
-experimental_close_on_slow_client = false
-
-# How long to wait for a tx to be committed during /broadcast_tx_commit.
-# WARNING: Using a value larger than 10s will result in increasing the
-# global HTTP write timeout, which applies to all connections and endpoints.
-# See https://github.com/tendermint/tendermint/issues/3435
-timeout_broadcast_tx_commit = "10s"
-
-# Maximum size of request body, in bytes
+timeout_broadcast_tx_commit = "10000ms"
 max_body_bytes = 1000000
-
-# Maximum size of request header, in bytes
 max_header_bytes = 1048576
-
-# The path to a file containing certificate that is used to create the HTTPS server.
-# Might be either absolute path or path related to CometBFT's config directory.
-# If the certificate is signed by a certificate authority,
-# the certFile should be the concatenation of the server's certificate, any intermediates,
-# and the CA's certificate.
-# NOTE: both tls_cert_file and tls_key_file must be present for CometBFT to create HTTPS server.
-# Otherwise, HTTP server is run.
 tls_cert_file = ""
-
-# The path to a file containing matching private key that is used to create the HTTPS server.
-# Might be either absolute path or path related to CometBFT's config directory.
-# NOTE: both tls-cert-file and tls-key-file must be present for CometBFT to create HTTPS server.
-# Otherwise, HTTP server is run.
 tls_key_file = ""
+pprof_laddr = ""
 
-# pprof listen address (https://golang.org/pkg/net/http/pprof)
-pprof_laddr = "localhost:6060"
-
-#######################################################
-###           P2P Configuration Options             ###
-#######################################################
-[p2p]
-
-# Address to listen for incoming connections
+[ledger.cometbft.p2p]
 laddr = "tcp://0.0.0.0:26656"
-
-# Address to advertise to peers for them to dial
-# If empty, will use the same port as the laddr,
-# and will introspect on the listener or use UPnP
-# to figure out the address. ip and port are required
-# example: 159.89.10.97:26656
 external_address = ""
-
-# Comma separated list of seed nodes to connect to
 seeds = ""
-
-# Comma separated list of nodes to keep persistent connections to
-persistent_peers = ""
-
-# UPNP port forwarding
+persistent_peers = "tcp://12f7d109aa221022b1dd4bf129058925e142d78b@92.255.176.91:26656,tcp://9b07e267da460215ca1d1ee40ed1a1b4531cca17@127.0.0.1:26656,tcp://9b34a10e4c6601b5f9a0f4e215c016f76d3f0135@109.123.238.97:26656,tcp://2d12d3ebdf61d837c635076b585f778d9c46efce@65.109.32.148:26656,tcp://2223ee23e91e5aea68d074039fbee13ade3e996d@141.95.33.198:26656,tcp://923f4c84f311696e282c82939b75180cc4dae4e2@65.108.232.227:26656,tcp://1a81210f60410ff4db69cfac51a487367737b6e2@161.97.166.46:26656,tcp://f6cc3956be6c381936b68b9e97efa52dbece23e2@193.34.212.39:26659,tcp://703469633403964c7aa84cf3a5ec301066ffd3d1@162.55.6.163:26656,tcp://1ade2cfe9a41fc67ab1103ec6a214396610edc53@95.217.62.210:26656,tcp://ad6283618fd1e1b3ff46276d2c8917d24cfa4c1f@65.109.92.13:26656,tcp://7adec2e864638d68314feaf8b7be185d6df2d3bc@162.55.84.47:26656,tcp://96b984fab82002b3cc46f2bda382a28d41730670@88.99.5.247:26656,tcp://e53d03843500ea62f162984bddcbfecafca1581e@194.163.131.181:26656,tcp://9de244e34d9e6386fabc08a25f11ed532af66477@65.108.31.114:26656,tcp://83cc9d7aa07dd8e984a2538fffc20c95065d4a62@88.208.242.218:26656,tcp://6fe86717d5ce9a4af039bc8a5964d9c8fbeadcad@135.181.116.109:26656,tcp://5ec63726c7f7f9a74f97a2a6000aa843c2ad64b8@195.3.220.63:26656,tcp://57c485eddbf5575af4d363c0b1bae5416065c02b@185.207.104.139:26656,tcp://5c5b9e3aaf1bb839680aa6717b8c934d344ae266@222.106.187.14:56500,tcp://7f6d6913ab2c29c91b5e452274ef4fd4cc6f794c@5.78.42.216:26656,tcp://a98cf3c9c96798823cd6bc0b4e9560947e8bd1a2@65.21.139.150:26656,tcp://3818decf1254c5ee5511ea71047ffa69228ecfb5@185.209.179.13:26656,tcp://b31b5e05591c0355b70b3dfa02a21d32ae320d28@49.12.129.137:26656,tcp://002f1b216b5e14f025d2900129bcd66731ff62a8@65.109.82.155:26656,tcp://59f727752d195121e87a1a5b96b793baf9ae0630@62.33.73.29:26656,tcp://2f17b283c701bc326657d3597583dea594e3da40@65.21.139.155:26656,tcp://3074d72e34ca5d7b39b7b07608d5bcb372554bc6@162.55.238.216:26656,tcp://cfff546182c7a599a510c6dc5394f5b3323d7fc6@127.0.0.1:26656,tcp://80f162557ecd380cf540e567db2374ca7789c7c9@144.76.182.234:36656,tcp://701e02c9ff90768489bf798d5b4dff15e41d3cf8@62.171.158.177:26656,tcp://564883c212fd04b6a1142d88ffbe998453764550@77.121.211.194:26656,tcp://da2097999c1b30bacd286f91f22c6ebb3e6be84b@173.212.200.210:26656,tcp://5995ee5578aec28bf199c2e6aa4341d200b0896f@51.77.226.129:26656,tcp://4c6a9f8cab184883fb44afef025ee7a92f7a75c2@65.108.111.200:26656,tcp://9e8a9a1e586a471a2909ba10900495c1d8c73668@194.163.135.166:26656,tcp://2b7c2e5caae734947b0bea5a150d5b52d9a870d5@65.108.78.29:26656,tcp://a45f2e7863143ea4b053480a2ca12f5e6b9c5300@85.208.51.8:26656,tcp://3bad750af8e2998293ac4730319d585b2982bc7c@65.109.158.190:26656,tcp://f547476aed514997a25b95533bf6a0ee6bb2447b@65.108.8.28:26656,tcp://10eda506772ca3e27b42db77e122613b8ab5689b@65.108.131.99:26656,tcp://5ac7bb97d322e29b3721e56fb8af83796b1e8932@198.244.254.16:26656,tcp://02d8f3b1ce4bcee1c5d8d6bbf3f20ca636aad03f@185.218.126.117:26656,tcp://35c944567ec7f7341ebdc7801e3e8f89f9274562@158.220.98.135:26656,tcp://b886f77ca0e8b4e3dd1f466a00f05e908d449193@136.243.148.154:26656,tcp://40df5d5361095eba8138a6f20e3a3fe7f60fc4ac@80.64.208.172:26656,tcp://69eac414e987cd6b6d432b99510219b564e4ac91@65.109.84.33:26656,tcp://c43c773ac8376e06dd1fe1c7a81fd07abffc6dfa@66.45.246.166:26656,tcp://1ad0d7adf9a3932fd49949da2bb6eb31cf16ea3d@109.248.11.70:26656,tcp://1f695adcaa91ccd99c37670a5bb47b235531d622@194.163.142.45:26656,tcp://bdfee79a2c6df2b90ae487d80de6e24c0d3b2e29@65.108.199.79:26112,tcp://d401c12e12e790207478a6c15dff5af24397ff75@89.58.28.79:26656,tcp://af3d109090641206849811263376a8746ee09802@93.115.25.94:26656,tcp://8a1ab1f777619adde9f393b2e2df36f82ffe9d26@65.108.13.212:26656,tcp://5eb4f91534b38e55296c17000587af68a35d6dc8@165.154.225.13:26656,tcp://14f5c76829f6be55afb0e5d81843af3282b1a4b0@135.181.138.161:26656,tcp://acd0c14811ef7a4b68e855c6845ebf6430621c3e@34.125.137.100:26656,tcp://1d12fa835150c24802887026393d3d068537db69@217.76.55.91:26656,tcp://aec2018bdc971fda29f4e02090d547841eed9b5b@77.248.159.123:26656,tcp://7ef041d5150a8d83601a40f680a68e39ae0de8a8@178.170.46.107:26656,tcp://4a4fdb1dfef6a1985459613c6763034e0177e4d0@63.32.210.222:26656,tcp://44b3fb68b3e13c18429d967928428100497a98e1@135.181.215.152:26656,tcp://0d20dc6cfb7afe41eab58044218c7f40e4018366@217.76.55.205:26656,tcp://475a4bbda83d0db789779b74af0e97261d9ab797@138.201.125.168:26656,tcp://c4b22fae3a81a98129adce46eed2b557d4f990fe@65.108.238.4:26656,tcp://c97dd3a6b586f3e95333c08f6406d5aefa77c2a3@65.109.91.52:26656,tcp://ac5073df4da43f4296153dbbb1b9763b0eaed1fa@65.21.205.248:26656,tcp://0e6eaff43b19f3a3d522cd81381df6a35cf56e23@95.217.72.99:26656,tcp://3e3d266b71fb6f292ba1e14dd56f27e12b9ad983@109.205.182.127:26656,tcp://ced106a33a1a8cfd74d826da33cc9003441965eb@139.180.217.51:26656,tcp://5ceae2ec2832738f44c3ff9e964a10a3ecf80ffc@142.132.194.124:10904,tcp://50bac857c68a98a22d21dc7c442b564352615507@65.109.72.14:26656,tcp://07f737a993f013eea5150099e9cdc8bd45047dcd@85.190.134.38:26656,tcp://e30aff089ddb01034e17c33208080caa4ddc7426@152.32.192.85:26656,tcp://19845d48f95b7e0a85b31857d196c6f3b65bdbaa@51.91.105.170:26656,tcp://749cd7991ab798e3594cc288f37bd09d30970590@8.210.77.198:26656,tcp://eb2ec46576620cb07da418fd6f8bf467b7382b03@164.68.97.93:26656,tcp://268f11fc5e81f106c10338a9699b01b7acc453e5@5.9.61.237:26656,tcp://0f4dc8a1eabeab346dcdc1e31851cb0db7e468da@138.201.21.62:36656,tcp://04356517e6ed648fed15144c016c0bdae32c896a@65.21.224.248:26656,tcp://b9adb56e64c9ba1827fe7e18c1982fefe8024306@88.99.177.78:26656,tcp://cbbbb6a8ebbb738c0b0e59e4877d45fe46ef1124@65.109.89.5:36656,tcp://0c1ebfeebb9e65a480d2d918bf9f20dd20c552ce@69.197.2.14:26656,tcp://afcef145e5079698ba177eeafafe77ae0ba8735b@95.217.114.220:26656,tcp://8b9123f441f2a5b50c268c094891977cf34b333f@135.181.133.249:26656,tcp://4df3bb91c5d515351d07f77b4b4e740bece090ef@127.0.0.1:26656,tcp://08ba5b1bb64e5c13b887ad0294e7953d24c9b3ed@217.160.102.31:26656,tcp://4c0f73da3eda8f1b417b27207dd0c4eea49d07e6@158.220.105.59:26656,tcp://8d3298df3deab3c9cc532a05d2b68362902c07fa@23.88.74.54:26656,tcp://5c826efd0f7fa4ea430724f70fad958364af67da@5.9.70.180:26656,tcp://73124fec5da2bef87ae33e44b8e816302a97d39a@65.21.27.123:26656,tcp://c020af6e3ab54eaf6c0e7b72e1b930a59e9f72e3@167.86.66.179:26656,tcp://67a7840350919b923e6c640b8238e954a4650966@65.108.199.210:26656,tcp://4ff7967383c1fb085a8c0040405eb8fd06df0204@207.244.253.244:26656,tcp://40f4a8de39299c77350bf8e4263b6626f4e5acf3@88.198.26.117:26656,tcp://ad68acc4fdc82000efae4bcb3bf191d1194d425c@178.62.202.37:26656,tcp://240fcc1f3cb405b966b324c61f1f9c12fcc2be4c@5.199.172.43:26656,tcp://00266ef6a1b6000eb52d98dbcefb9ea0d9feaee4@65.108.11.228:26656,tcp://cd1675f972e8b8b9b4f3ff4ddb5f8789fd20e33e@88.208.57.200:26656,tcp://23606826719f6019fc691cf59ac7fc76d2e04872@142.132.135.125:24656,tcp://b019cba4514a088a006a31926817aed43b8df813@185.119.116.229:26656,tcp://68e44377c9d7443a89357c80204804aca9c14071@159.69.76.171:26656,tcp://32f0c3a72826e24ee6bdf5b1c8b1c15b3654ddf1@65.108.129.150:26656,tcp://8afedcc89af3a381a6f1b8ca78ab96f9bc1db1a4@149.50.102.41:26656,tcp://d9893fc935987d49653625071303f50f0dbd7ff5@65.108.135.211:26656,tcp://08dac5932a847bccf45ae60f01c71f621dfb205b@65.108.140.109:26656,tcp://e8eadaf65d79d0aa44ddb49d2fa5747b0d802eae@65.108.76.60:26656,tcp://8261143b40bf472caa0b7b7523f689a1620431e6@135.181.116.246:26656,tcp://e44a20cfcfc90a2cba21cf34d5f809c411eb101f@23.88.5.169:26656,tcp://ef3b7946ba46af484952a560f6a45b9a122283c8@148.251.11.99:26656,tcp://672883587a04d62d771bd4fd8d33300a46e37cc9@95.217.115.184:26656,tcp://506736c1362715c8311087e8f13a2a45d32b2935@194.163.139.165:26656,tcp://03dec1540292ea57bc4d6bffd8a3178ad35de2dd@161.97.86.236:26656,tcp://7d7718b0a4b2eeebdb8c24d31164adf5fd3909a3@213.246.39.89:26656,tcp://21077bd1accf6cd4c62f5d6febd4817fbff860fb@65.108.230.113:26656,tcp://637a110ef39fda03cce603344cf2b8baa1a461cb@72.20.6.53:26656,tcp://8105b9368b963d3a5519213966f1dada3d5691a9@157.90.128.250:26656,tcp://8d9e32f5f20af907cb137df2410fb246191272c6@213.136.71.166:26656,tcp://fa9e0b57edb101f942c078871517f235df16a90c@66.206.2.138:26656,tcp://bb7e2abbcb0649535c85a2166ccf5f469729ab65@65.109.94.221:26656,tcp://26576c2c8d7bf4011d1a32439f4aa7b7018a8365@45.32.242.242:26656,tcp://585bb43ddd1a20b55cbc2ddb09922c99ffa400a6@213.239.210.125:26656,tcp://58eb6789e0151c3d705bf94b9b36c5b536b48654@207.148.108.50:26656,tcp://f74bf8ba9bad1f655d2c040b69e79e443c1c9a7d@65.109.52.162:26656,tcp://7f74c2ff98cac0385b54937236436b0742045b7f@135.148.101.238:26656,tcp://a9d45a62efdbf5b770b94189d6c38c4fdf26f2af@65.109.61.47:26656,tcp://39b42a081c227f05f74ff69e5bca6fa03d910f01@77.120.115.145:26656,tcp://796ec24b09599dd38033e2a24390ec0cdee7ed26@43.157.34.129:26656,tcp://abda9aeafa3c718719c431f632324ed11ff229a3@65.109.122.90:26656,tcp://ac35fb5591094e22a10c22e3ed4807312cf0aafa@162.55.4.42:26656,tcp://ec3df906bd5d98a4b64ba04fa92dee182500dab3@95.217.106.215:26656,tcp://2c91ca22e012d61deecb9089782070b525c191a9@78.46.74.23:27656,tcp://090994037b13401685af53b7f60a83942c273727@23.88.70.109:26656,tcp://32174939d5235577cdb56cff961b1add3d662bb9@135.181.119.59:26656,tcp://c4748659d553ee35043123d8aef29397502a8c9a@62.183.54.219:26656,tcp://4ef61e97a04e0f66b978f324c8e6a2d16b2ee364@65.109.38.208:26656,tcp://1a75ef34b5f32acafdfd8746fa7af9d9baea5ba3@65.109.39.189:26656,tcp://08e46fa0a6b52e2fada5ec85aaa925b4b652eaab@31.7.196.10:26656,tcp://6327dd2c20669372eede47bc791da4efcc012851@135.181.216.54:3000,tcp://cf68e42f0a1d50fe2ae61b6679e595a5160ab432@138.201.220.51:26656,tcp://a181e853ebbb7d6db3cfc9ab9dcae7f59d1c1559@65.109.93.152:26656,tcp://c4e4219b875f43a34378d931a53a5f576f55e295@65.109.85.226:3360,tcp://a5d79d9d703726eb060cc823e1c75935df593983@144.76.226.213:26656,tcp://9f5a9b4aebd8c0948b289b5c784bbba167ef8727@85.10.198.169:26656,tcp://f2613b5000dd066cbe3cdaee96361bee3f5f4b2e@65.109.69.163:26656,tcp://558c09b253d818d322c99cb9629aaa69e3446f1a@88.198.52.89:26656,tcp://f42fea4f026181eb06db83d27520f316816b8d15@195.201.175.107:26656,tcp://9e90eac0ee9e417dcaa7c0d03bdaf854b4941fbd@213.239.207.165:26656,tcp://cbc0ea6c5954f04b4ed150217cd8cb82719754da@167.235.39.5:26656,tcp://be138e2439b634a2a4c78940425a5e440577ee53@141.94.243.95:26656,tcp://e6c32c6ccb614030c1e261ce98d5b721abeb0f07@54.36.166.159:26656,tcp://c03a17d95af9d5b248d03088b7a9da37920d9b6f@37.27.17.9:26656,tcp://4ca6033791e056f112eeaf722ba8dca149abab79@209.126.86.119:26656,tcp://7bd9e9205c77af511f5e98b356c2c266166dabff@193.34.212.26:26656,tcp://d3a9de7c207bb9391dfffc1b976dda1042688946@185.190.140.93:26656,tcp://2e0d88ccdb7dc914093a8a8277f0fc65d0bc6cfa@51.89.195.66:26656,tcp://b1f2497c23034c7343950892dbb166b78d0c6515@135.181.215.212:26656,tcp://03de9c10c3100754d296e70eee704351ff015310@65.108.75.107:58656,tcp://718005b4c3d8d91dcd400db3fce4fcfd32c23e8f@65.108.131.189:26656,tcp://a49fc423f35f31251d63be90398e38c8dfd39498@173.249.7.88:26656,tcp://336a454a10dcbc045fbf9b15364fafdd53b17d09@144.76.107.182:26656,tcp://66751c51e0f5e27136e6877d51ded341e5b39927@37.120.245.74:26656,tcp://aa55cb043a8497648875e6d8531c0ab3da414bb6@65.21.105.106:26656,tcp://d7ab1498da29f90f2e86b9507925c6269c6455dd@164.68.102.10:26656,tcp://0350192338d48c4473703945d07148464ec81629@31.220.83.2:26656,tcp://e25837564f41b06183d57f5c835e072c3e8f9d94@95.217.207.236:26656,tcp://86265d785701f68584c38373d30cefed8bd407ec@185.197.251.177:26656,tcp://d86a9ac4f475f7809abf6487f05580cca88715b1@116.202.114.135:26656,tcp://d58ef7276a4606a8227d38ca2a5da129dc2febfa@148.251.69.40:26656,tcp://b2f07004385b679221d36c1cfff7b0635cb7c0f9@65.21.133.114:26256,tcp://d5da54df7f556e682de3054e4f26b4659dfd6e4b@170.64.183.33:26656,tcp://06056111e0a0abac9d30874509b0c6fb31eacdef@34.65.91.90:26656,tcp://eed9d01352a55505cfed0f3b7767ad4f06354d91@72.12.130.222:46656,tcp://9c68dc697b7b5cdea720284f4bbdb4a045472447@92.100.157.81:26656,tcp://6d8a3e5c1b01a10fdab7c98910aa482ff33972a3@65.109.117.219:26656,tcp://3a3d61a6e8cfe5b5ad3d43f9ff01ad85e9ed27ac@81.31.197.120:26656,tcp://ca29dee820740159b8f4b0c77edb0562bfc875e0@127.0.0.1:26656,tcp://8b44c12cd81e4af14c8f2de406fa35bec74efb52@144.76.30.36:26656,tcp://0f6e19ae1fab7cd84081349ebf46e75652a6fd99@116.202.227.117:26656,tcp://13ab46141d6ccf8c18adce131cdf6bcd382fa4c9@5.9.60.35:26656,tcp://8d093046c8b454e320c218b4c37065fe3e739275@167.71.55.25:26656,tcp://0286ed3a94125daaa988eb44c7b12ebf3fbe1110@88.198.52.46:20056,tcp://7feaebbf98c9122f635203381fe5a75d24cc0284@213.239.207.175:26656,tcp://04b5b0f35eff56d19612d19f0c1988b86c86ae48@158.220.97.60:26656,tcp://e05314a219186b3b1684bc28cce445dd6ca07989@162.55.99.181:26656,tcp://54cf36a6ea81b826e360264600ef6cdd5af525bc@178.79.128.193:26656,tcp://b3d7bbd76840d56be02cec4c5a9a651e3adbab8f@65.108.101.19:20156,tcp://97985167fae8c95cb9c0c62f8728e01ab90412d3@185.207.250.206:26656,tcp://61ac57f79762ba0c9e115ba660a24974873c2943@157.90.176.184:36656,tcp://38d32a6baac57c0f66a22a57cc0d863455b0423c@144.91.87.99:26656,tcp://7e5cb1412715b6d24d8ab46f9a6d4674aeb60d42@162.55.94.142:26656,tcp://f88a895b75f071bef508a9f16e9ec5e7343b639c@185.137.233.247:26656,tcp://bd25739db90948a961002279d109f1a5de5e166a@5.9.61.120:26656,tcp://75af6b95f482423fb2cad134c0720c5fb8e000b2@94.130.33.240:26656,tcp://522bbc4f164be753c11f13c6ffa7e4df1c460754@65.109.113.82:26656,tcp://62ee33dcd803ef68f2819ecba8aed910cc6ec23f@158.220.112.82:46656,tcp://bf53c51155e3da4a7f4659caa4bfb2d173a17905@65.109.92.148:26656,tcp://d857abed239642e11095017387817cb9f198d3a0@138.201.85.42:26656,tcp://a98c977a3dcb28ec082af172f9299f401dd8c6cd@104.36.21.247:26656,tcp://fff23426c0d8401e95bc165e6591a95297bc7544@23.88.66.86:26656,tcp://8b0fa964ac13b907cd552f078a253f9b02a45012@146.19.24.52:26656,tcp://f1842a877dc3354a7b1fa68a6a6c292586c11c15@162.55.0.160:26656,tcp://440898ce8eec4ef8ee5f443cdcdfd28af701d9b2@65.108.225.158:26656,tcp://93706ef97398817280f4d084756d078e18144100@88.99.161.228:26656,tcp://ad5954cb6be98bced7a84cef5b372aa9589a9443@65.109.80.237:26656,tcp://525e9248d7b4323d71a2f1a563c11710cb89bfdd@168.119.212.69:26656,tcp://e280c0db331a21d8d16fec714770ff48f6c8b304@135.181.18.54:26656,tcp://57719feacf2453cd0940e835e71e3c972c465aae@157.90.183.32:26656,tcp://30e7a2a6053dc518fc612f0d15f09d71cff8627a@176.9.110.12:26656,tcp://3d35882c6ab3e3d904a66f864e9a7dc539610968@167.86.125.181:26656,tcp://3b8823d8ef98b2d0f2f3b81f0cfa67032b7b0c6d@65.108.46.252:26656,tcp://063fd2c10dfdb317f973e4f4cd3c224554b3c82f@194.163.132.38:26656,tcp://6e59b76f77c5826691e242380ca26660eaa0d636@212.51.129.74:26656,tcp://7a908af54383a08a5a4f8f1d9a572063d6335b4e@84.46.249.217:26656,tcp://06c9ea6b2997f0c8d0403a0c1df798b60e8e0ffe@65.109.34.121:26656,tcp://32436fd814556b208a0d8f9f0f3bbbabb8577866@195.14.6.169:26656,tcp://e519bebcc31d2f489c530346026640b4302a6732@144.217.79.221:26656,tcp://ad05a82ccc841f295e92fe468aaa058615cb6522@154.53.45.59:26656,tcp://402189d0400de6b23b5ebe9d40bfcf0c70de8699@204.186.74.43:26656,tcp://d4899ca541070a4e335ccffddf4a36e4cf239246@95.217.202.32:26656,tcp://339f45bce46a5735cf33744f178c5d47450b4faf@167.235.117.3:26656,tcp://95bf35166b35180d2207578d12da8234bb4c0039@185.246.87.48:36656,tcp://e409fe93a26ec79d822d3331a8aaaea78e343099@168.119.89.31:26656,tcp://571c55b27f51a7f9eb8c9481ca452a2a2bccb0dd@44.214.194.42:26656,tcp://081ddeb786ba075ebb290a8c1c21df195293d355@75.119.137.202:26656,tcp://f76cc31969af077b64100e516d2af96faffc53d7@62.195.206.235:26656,tcp://4cab9c8fe2c46dbefeaff9d4b83f32193eb62871@65.108.124.121:26656,tcp://7e5194d8020cb10ddf3b4e2729f55620eab85a0f@65.109.84.115:26656,tcp://237a47bda138a5ebe45b4ec32ed848b625b6c221@37.27.48.156:26656,tcp://f7e12dae3f22dbbbe47f43310910a9936f2aa9f5@188.40.66.226:26656,tcp://dcabeaac9ca584e8e7a8b025116d5e3bdedd4afe@178.63.184.133:26656,tcp://f127a788c8b5153fa35b4d51b9c2df558a7c5df9@65.109.25.104:26656,tcp://40792d2131a24fbc4eee4517893b1981d8eb328b@95.216.22.44:26656,tcp://b00940600ebb0963aa32417b034f68d81f4c6b90@65.21.239.60:26656,tcp://619b755bce92ca32e67684ef56017c920a641f57@2.56.97.101:26656,tcp://fcf7bd2211e12793d1f69784fb9f9fee1e050758@94.130.36.87:26656,tcp://615ad6b39cee9c8640c0e834e25b5fe958f3827d@65.109.62.179:26656,tcp://fbc347623e86b3da0cb9bf6f06069a3ec97e591c@135.181.134.151:26656,tcp://429cd2c5d3915cb4db055b35bcc8b61d5d200992@65.109.107.172:26656,tcp://335452b6d26b54d32c81ee0088dd8e77272bec9d@148.113.16.49:26656,tcp://780ea9553bd5f10beb67d7b727c7db9e56391ec6@34.16.18.175:26656,tcp://c427b917f8c361494bcc851db75a5dd200dbe20b@65.108.129.188:26656,tcp://37587dd5fd3adeb959cfec747ecbb103f4a74e30@194.163.148.115:26656,tcp://be6648cb6d14b2f9047ad489190875e1b6ef3169@65.108.229.93:26656,tcp://8a1dff2efbeededc4fffe9b31fb8fedcb6dd963c@173.212.223.233:36656,tcp://ea9542c592da722fd0c4277e48fc4efbecffc519@88.99.138.49:26656,tcp://26368b2c3d3ac57432746cf01fddd812980ef4b9@185.172.191.12:26656,tcp://4acdf20f99bbbd5926d15b78a658c29dd3baaa4f@95.216.193.176:26656,tcp://1b0d0a1b55c21b98b8ab06e16fbbfd7178b64a43@43.201.126.213:26656,tcp://a630852d9a6bae26bf73f94c7ee41c19375501d5@144.76.28.163:26656,tcp://76bbfd91f3e24eb31753a70a16118c1cd2ca6ad5@65.21.22.22:26656,tcp://a43f34f71e254c42b0e942becdeaadb7e22e319f@176.9.53.87:46656,tcp://0ad5132eec47642bfafc04b565c787768c55c713@65.21.163.229:26656,tcp://e56509123dafbaa561d9176f9ed768818a906b77@65.21.28.230:26656,tcp://703b22239969b99375cca143eabd65dd2a5fe3e4@65.108.239.113:26656"
 upnp = false
-
-# Path to address book
 addr_book_file = "config/addrbook.json"
-
-# Set true for strict address routability rules
-# Set false for private or local networks
 addr_book_strict = true
-
-# Maximum number of inbound peers
 max_num_inbound_peers = 40
-
-# Maximum number of outbound peers to connect to, excluding persistent peers
 max_num_outbound_peers = 10
-
-# List of node IDs, to which a connection will be (re)established ignoring any existing limits
 unconditional_peer_ids = ""
-
-# Maximum pause when redialing a persistent peer (if zero, exponential backoff is used)
-persistent_peers_max_dial_period = "0s"
-
-# Time to wait before flushing messages out on the connection
+persistent_peers_max_dial_period = "0ms"
 flush_throttle_timeout = "100ms"
-
-# Maximum size of a message packet payload, in bytes
 max_packet_msg_payload_size = 1024
-
-# Rate at which packets can be sent, in bytes/second
 send_rate = 5120000
-
-# Rate at which packets can be received, in bytes/second
 recv_rate = 5120000
-
-# Set true to enable the peer-exchange reactor
 pex = true
-
-# Seed mode, in which node constantly crawls the network and looks for
-# peers. If another node asks it for addresses, it responds and disconnects.
-#
-# Does not work if the peer-exchange reactor is disabled.
 seed_mode = false
-
-# Comma separated list of peer IDs to keep private (will not be gossiped to other peers)
 private_peer_ids = ""
-
-# Toggle to disable guard against peers connecting from the same ip.
 allow_duplicate_ip = false
+handshake_timeout = "20000ms"
+dial_timeout = "3000ms"
 
-# Peer connection configuration.
-handshake_timeout = "20s"
-dial_timeout = "3s"
-
-#######################################################
-###          Mempool Configuration Option          ###
-#######################################################
-[mempool]
-
-# Mempool version to use:
-#   1) "v0" - (default) FIFO mempool.
-#   2) "v1" - prioritized mempool.
-version = "v0"
-
-# Recheck (default: true) defines whether CometBFT should recheck the
-# validity for all remaining transaction in the mempool after a block.
-# Since a block affects the application state, some transactions in the
-# mempool may become invalid. If this does not apply to your application,
-# you can disable rechecking.
+[ledger.cometbft.mempool]
 recheck = true
 broadcast = true
 wal_dir = ""
-
-# Maximum number of transactions in the mempool
 size = 5000
-
-# Limit the total size of all txs in the mempool.
-# This only accounts for raw transactions (e.g. given 1MB transactions and
-# max_txs_bytes=5MB, mempool will only accept 5 transactions).
 max_txs_bytes = 1073741824
-
-# Size of the cache (used to filter transactions we saw earlier) in transactions
 cache_size = 10000
-
-# Do not remove invalid transactions from the cache (default: false)
-# Set to true if it's not possible for any invalid transaction to become valid
-# again in the future.
 keep-invalid-txs-in-cache = false
-
-# Maximum size of a single transaction.
-# NOTE: the max size of a tx transmitted over the network is {max_tx_bytes}.
 max_tx_bytes = 1048576
-
-# Maximum size of a batch of transactions to send to a peer
-# Including space needed by encoding (one varint per transaction).
-# XXX: Unused due to https://github.com/tendermint/tendermint/issues/5796
 max_batch_bytes = 0
 
-# ttl-duration, if non-zero, defines the maximum amount of time a transaction
-# can exist for in the mempool.
-#
-# Note, if ttl-num-blocks is also defined, a transaction will be removed if it
-# has existed in the mempool at least ttl-num-blocks number of blocks or if it's
-# insertion time into the mempool is beyond ttl-duration.
-ttl-duration = "0s"
+[ledger.cometbft.consensus]
+wal_file = "data/cs.wal/wal"
+timeout_propose = "3000ms"
+timeout_propose_delta = "500ms"
+timeout_prevote = "1000ms"
+timeout_prevote_delta = "500ms"
+timeout_precommit = "1000ms"
+timeout_precommit_delta = "500ms"
+timeout_commit = "8000ms"
+double_sign_check_height = 0
+skip_timeout_commit = false
+create_empty_blocks = true
+create_empty_blocks_interval = "0ms"
+peer_gossip_sleep_duration = "100ms"
+peer_query_maj23_sleep_duration = "2000ms"
 
-# ttl-num-blocks, if non-zero, defines the maximum number of blocks a transaction
-# can exist for in the mempool.
-#
-# Note, if ttl-duration is also defined, a transaction will be removed if it
-# has existed in the mempool at least ttl-num-blocks number of blocks or if
-# it's insertion time into the mempool is beyond ttl-duration.
-ttl-num-blocks = 0
+[ledger.cometbft.storage]
+discard_abci_responses = false
 
-#######################################################
-###         State Sync Configuration Options        ###
-#######################################################
-[statesync]
-# State sync rapidly bootstraps a new node by discovering, fetching, and restoring a state machine
-# snapshot from peers instead of fetching and replaying historical blocks. Requires some peers in
-# the network to take and serve state machine snapshots. State sync is not attempted if the node
-# has any local state (LastBlockHeight > 0). The node will have a truncated block history,
-# starting from the height of the snapshot.
+[ledger.cometbft.tx_index]
+indexer = "null"
+
+[ledger.cometbft.instrumentation]
+prometheus = false
+prometheus_listen_addr = ":26660"
+max_open_connections = 3
+namespace = "namada_tm"
+
+[ledger.cometbft.statesync]
 enable = false
-
-# RPC servers (comma-separated) for light client verification of the synced state machine and
-# retrieval of state data for node bootstrapping. Also needs a trusted height and corresponding
-# header hash obtained from a trusted source, and a period during which validators can be trusted.
-#
-# For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
-# weeks) during which they can be financially punished (slashed) for misbehavior.
 rpc_servers = ""
 trust_height = 0
 trust_hash = ""
 trust_period = "168h0m0s"
-
-# Time to spend discovering snapshots before initiating a restore.
-discovery_time = "15s"
-
-# Temporary directory for state sync snapshot chunks, defaults to the OS tempdir (typically /tmp).
-# Will create a new, randomly named directory within, and remove it when done.
+discovery_time = "15000ms"
 temp_dir = ""
 
-# The timeout duration before re-requesting a chunk, possibly from a different
-# peer (default: 1 minute).
-chunk_request_timeout = "10s"
-
-# The number of concurrent chunk fetchers to run (default: 1).
-chunk_fetchers = "4"
-
-#######################################################
-###       Fast Sync Configuration Connections       ###
-#######################################################
-[fastsync]
-
-# Fast Sync version to use:
-#   1) "v0" (default) - the legacy fast sync implementation
-#   2) "v1" - refactor of v0 version for better testability
-#   2) "v2" - complete redesign of v0, optimized for testability & readability
+[ledger.cometbft.fastsync]
 version = "v0"
 
-#######################################################
-###         Consensus Configuration Options         ###
-#######################################################
-[consensus]
-
-wal_file = "data/cs.wal/wal"
-
-# How long we wait for a proposal block before prevoting nil
-timeout_propose = "3s"
-# How much timeout_propose increases with each round
-timeout_propose_delta = "500ms"
-# How long we wait after receiving +2/3 prevotes for “anything” (ie. not a single block or nil)
-timeout_prevote = "1s"
-# How much the timeout_prevote increases with each round
-timeout_prevote_delta = "500ms"
-# How long we wait after receiving +2/3 precommits for “anything” (ie. not a single block or nil)
-timeout_precommit = "1s"
-# How much the timeout_precommit increases with each round
-timeout_precommit_delta = "500ms"
-# How long we wait after committing a block, before starting on the new
-# height (this gives us a chance to receive some more precommits, even
-# though we already have +2/3).
-timeout_commit = "5s"
-
-# How many blocks to look back to check existence of the node's consensus votes before joining consensus
-# When non-zero, the node will panic upon restart
-# if the same consensus key was used to sign {double_sign_check_height} last blocks.
-# So, validators should stop the state machine, wait for some blocks, and then restart the state machine to avoid panic.
-double_sign_check_height = 0
-
-# Make progress as soon as we have all the precommits (as if TimeoutCommit = 0)
-skip_timeout_commit = false
-
-# EmptyBlocks mode and possible interval between empty blocks
-create_empty_blocks = true
-create_empty_blocks_interval = "0s"
-
-# Reactor sleep duration parameters
-peer_gossip_sleep_duration = "100ms"
-peer_query_maj23_sleep_duration = "2s"
-
-#######################################################
-###         Storage Configuration Options           ###
-#######################################################
-[storage]
-
-# Set to true to discard ABCI responses from the state store, which can save a
-# considerable amount of disk space. Set to false to ensure ABCI responses are
-# persisted. ABCI responses are required for /block_results RPC queries, and to
-# reindex events in the command-line tool.
-discard_abci_responses = false
-
-#######################################################
-###   Transaction Indexer Configuration Options     ###
-#######################################################
-[tx_index]
-
-# What indexer to use for transactions
-#
-# The application will set which txs to index. In some cases a node operator will be able
-# to decide which txs to index based on configuration set in the application.
-#
-# Options:
-#   1) "null"
-#   2) "kv" (default) - the simplest possible indexer, backed by key-value storage (defaults to levelDB; see DBBackend).
-# 		- When "kv" is chosen "tx.height" and "tx.hash" will always be indexed.
-#   3) "psql" - the indexer services backed by PostgreSQL.
-# When "kv" or "psql" is chosen "tx.height" and "tx.hash" will always be indexed.
-indexer = "kv"
-
-# The PostgreSQL connection configuration, the connection format:
-#   postgresql://<user>:<password>@<host>:<port>/<db>?<opts>
-psql-conn = ""
-
-#######################################################
-###       Instrumentation Configuration Options     ###
-#######################################################
-[instrumentation]
-
-# When true, Prometheus metrics are served under /metrics on
-# PrometheusListenAddr.
-# Check out the documentation for the list of available metrics.
-prometheus = false
-
-# Address to listen for Prometheus collector(s) connections
-prometheus_listen_addr = ":26660"
-
-# Maximum number of simultaneous connections.
-# If you want to accept a larger number than the default, make sure
-# you increase your OS limits.
-# 0 - unlimited.
-max_open_connections = 3
-
-# Instrumentation namespace
-namespace = "cometbft"
+[ledger.ethereum_bridge]
+mode = "RemoteEndpoint"
+oracle_rpc_endpoint = "http://127.0.0.1:8545"
+channel_buffer_size = 1000
