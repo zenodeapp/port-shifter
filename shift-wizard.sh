@@ -1,5 +1,5 @@
 
-# PORT SHIFTER for app.toml and config.toml files.
+# PORT SHIFTER for Namada-based config.toml file scheme.
 # https://github.com/zenodeapp/port-shifter
 # ZENODE (https://zenode.app)
 
@@ -7,7 +7,7 @@
 # let the user customize each port individually. If you do not trust
 # this wizard or prefer a simpler variant, use quick-shift.sh instead.
 
-read -p "What's the path to the config.toml file? (example: ~/.local/share/namada/public-testnet-15.0dacadb8d663): " CONFIG_PATH
+read -p "What's the path to the main config.toml file? (example: ~/.local/share/namada/public-testnet-15.0dacadb8d663): " CONFIG_PATH
 CONFIG_PATH=$(eval echo "$CONFIG_PATH" | sed 's/\/$//') # expand tilde and remove trailing slash
 
 # Check if CONFIG_PATH is empty
@@ -16,7 +16,7 @@ if [ -z "$CONFIG_PATH" ]; then
     exit 1
 fi
 
-# Check if config files exist
+# Check if config file exist
 if [ ! -f "$CONFIG_PATH/config.toml" ]; then
     echo "Error: config file $CONFIG_PATH/config.toml not found."
     exit 1
