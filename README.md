@@ -33,7 +33,7 @@ If you're in a limited or restrictive environment or do not trust running script
 This script can be run using:
 
 ```
-sh quick-shift.sh <path_to_config_files> [port_increment_value]
+sh quick-shift.sh <path_to_config_file> [port_increment_value]
 ```
 > _[port_increment_value]_ is optional and defaults to 0, which will reset all the ports to their default values.
 
