@@ -15,7 +15,7 @@ It can get quite time-consuming to replace the ports inside of the ~`app.toml`~ 
 
 ### 1. [shift-wizard.sh](shift-wizard.sh)
 
-This wizard can either increment all ports by a common value _or_ let the user customize each port individually. It will start off by asking where these config files are located followed by the question whether you'd like to customize each port individually or not.
+This wizard can either increment all ports by a common value _or_ let the user customize each port individually. It will start off by asking where the config file is located followed by the question whether you'd like to customize each port individually or not.
 
 This script can be run using:
 
@@ -42,7 +42,7 @@ sh quick-shift.sh <path_to_config_file> [port_increment_value]
 ### for port replacement
 
 > [!IMPORTANT]
-> These scripts make a backup of the _.toml_ files (as _.toml.bak_ files), but do not take in account what ports were already configured _when incrementing_. Therefore the new ports get calculated **using the default port values stated in the script itself** and **not** what you _already_ had configured.
+> These scripts make a backup of the _.toml_ file (as _.toml.bak_), but do not take in account what ports were already configured _when incrementing_. Therefore the new ports get calculated **using the default port values stated in the script itself** and **not** what you _already_ had configured.
 
 The logic for the _sed_-commands is to always look for the last colon (:). That way we only replace the _:port_ part, without having to worry about overwriting pre-configured ip-addresses that use _localhost_, _IPv4_ or _IPv6_ formatted addresses or protocols like _https://_ and _tcp://_.
 
