@@ -7,8 +7,15 @@
 # let the user customize each port individually. If you do not trust
 # this wizard or prefer a simpler variant, use quick-shift.sh instead.
 
-read -p "What's the path to the main config.toml file? (example: ~/.local/share/namada/public-testnet-15.0dacadb8d663): " CONFIG_PATH
-CONFIG_PATH=$(eval echo "$CONFIG_PATH" | sed 's/\/$//') # expand tilde and remove trailing slash
+# Check if the correct number of arguments is provided
+if [ "$#" -lt 1 ]; then
+    echo "Usage:   sh $0 <path_to_config_dir>"
+    echo "Example: sh $0 $HOME/.local/share/namada/public-testnet-15.0dacadb8d663"
+    echo ""
+    exit 1
+fi
+
+CONFIG_PATH=$(eval echo "$1" | sed 's/\/$//') # expand tilde and remove trailing slash
 
 # Check if CONFIG_PATH is empty
 if [ -z "$CONFIG_PATH" ]; then

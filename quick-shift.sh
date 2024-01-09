@@ -10,7 +10,7 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <path_to_config_file> [port_increment_value]"
+    echo "Usage: $0 <path_to_config_dir> [port_increment_value]"
     echo "  [port_increment_value] is optional (default: 0, which will reset ports to default)"
     echo ""
     exit 1

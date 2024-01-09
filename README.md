@@ -15,13 +15,14 @@ It can get quite time-consuming to replace the ports inside of the ~`app.toml`~ 
 
 ### 1. [shift-wizard.sh](shift-wizard.sh)
 
-This wizard can either increment all ports by a common value _or_ let the user customize each port individually. It will start off by asking where the config file is located followed by the question whether you'd like to customize each port individually or not.
+This wizard can either increment all ports by a common value _or_ let the user customize each port individually. It will start off by asking whether you'd like to customize each port individually or not.
 
 This script can be run using:
 
 ```
-sh shift-wizard.sh
+sh shift-wizard.sh <path_to_config_dir>
 ```
+> <path_to_config_dir> can either be an absolute or relative path towards the directory containing the `config.toml` file.
 
 > [!TIP]
 > If you made a mess of all your ports, then you can **reset the ports to their default values** by giving it an **increment** of **0**.
@@ -33,7 +34,7 @@ If you're in a limited or restrictive environment or do not trust running script
 This script can be run using:
 
 ```
-sh quick-shift.sh <path_to_config_file> [port_increment_value]
+sh quick-shift.sh <path_to_config_dir> [port_increment_value]
 ```
 > _[port_increment_value]_ is optional and defaults to 0, which will reset all the ports to their default values.
 
