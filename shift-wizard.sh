@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # PORT SHIFTER for Namada-based config.toml file scheme.
 # https://github.com/zenodeapp/port-shifter
