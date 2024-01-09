@@ -15,7 +15,7 @@ It can get quite time-consuming to replace the ports inside of the ~`app.toml`~ 
 
 ### 1. [shift-wizard.sh](shift-wizard.sh)
 
-This wizard can either increment all ports by a common value _or_ let the user customize each port individually. It will start off by asking whether you'd like to customize each port individually or not.
+This wizard can either increment all ports by a common value _or_ let the user customize each port individually. It will start by asking whether you'd like to customize each port individually or not and continue from there.
 
 This script can be run using:
 
