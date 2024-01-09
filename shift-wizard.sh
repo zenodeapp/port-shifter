@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # PORT SHIFTER for app.toml and config.toml files.
 # https://github.com/zenodeapp/port-shifter
