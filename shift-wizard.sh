@@ -7,8 +7,15 @@
 # let the user customize each port individually. If you do not trust
 # this wizard or prefer a simpler variant, use quick-shift.sh instead.
 
-read -p "What's the path to the config files? (example: ~/.gaia/config): " CONFIG_PATH
-CONFIG_PATH=$(eval echo "$CONFIG_PATH" | sed 's/\/$//') # expand tilde and remove trailing slash
+# Check if the correct number of arguments is provided
+if [ "$#" -lt 1 ]; then
+    echo "Usage:   sh $0 <path_to_config_dir>"
+    echo "Example: sh $0 $HOME/.gaia/config"
+    echo ""
+    exit 1
+fi
+
+CONFIG_PATH=$(eval echo "$1" | sed 's/\/$//') # expand tilde and remove trailing slash
 
 # Check if CONFIG_PATH is empty
 if [ -z "$CONFIG_PATH" ]; then
