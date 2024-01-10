@@ -24,7 +24,7 @@ sh shift-wizard.sh <path_to_config_dir>
 
 ### 2. [quick-shift.sh](quick-shift.sh)
 
-If you're in a limited or restrictive environment or do not trust running scripts then use this one instead. It is only capable of incrementing all port values, but can also be edited if one desires to edit every port individually by just changing the values for every port variable inside of the file and keeping the increment value at 0.
+If you're in a limited or restrictive environment or do not trust running "complex" scripts then use this one instead. It is only capable of incrementing all port values, but can also be edited if one desires to edit every port individually by just changing the values for every port variable inside of the file and keeping the increment value at 0.
 
 This script can be run using:
 
