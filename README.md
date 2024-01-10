@@ -33,6 +33,28 @@ sh quick-shift.sh <path_to_config_dir> [port_increment_value]
 ```
 > _[port_increment_value]_ is optional and defaults to 0, which will reset all the ports to their default values.
 
+## Sup<i>port</i>
+
+Here follows a list of all the ports that are currently supported, with their _default_ values:
+
+```
+# config.toml
+proxy_app                    = 26658
+[rpc] laddr                  = 26657
+pprof_laddr                  = 6060
+[p2p] laddr                  = 26656
+prometheus_listen_addr       = 26660
+
+# app.toml
+[api] address                = 1317
+[rosetta] address            = 8080
+[grpc] address               = 9090
+[grpc-web] address           = 9091
+[json-rpc] address           = 8545
+[json-rpc] ws-address        = 8546
+[json-rpc] metrics-address   = 6065
+```
+
 ## Logic
 
 ### for port replacement
