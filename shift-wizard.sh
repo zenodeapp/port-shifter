@@ -25,8 +25,8 @@ if [ -z "$CONFIG_PATH" ]; then
 fi
 
 # Check if config files exist
-if [ ! -f "$CONFIG_PATH/config.toml" ] || [ ! -f "$CONFIG_PATH/app.toml" ]; then
-    echo "Error: One or both of the config files ($CONFIG_PATH/config.toml or $CONFIG_PATH/app.toml) not found."
+if [ ! -f "$CONFIG_PATH/client.toml" ] || [ ! -f "$CONFIG_PATH/client.toml" ] || [ ! -f "$CONFIG_PATH/app.toml" ]; then
+    echo "Error: One of the config files ($CONFIG_PATH/client.toml, $CONFIG_PATH/config.toml or $CONFIG_PATH/app.toml) not found."
     exit 1
 fi
 
@@ -57,6 +57,7 @@ prompt_for_port() {
 }
 
 # backup
+cp $CONFIG_PATH/client.toml $CONFIG_PATH/client.toml.bak
 cp $CONFIG_PATH/config.toml $CONFIG_PATH/config.toml.bak
 cp $CONFIG_PATH/app.toml $CONFIG_PATH/app.toml.bak
 
@@ -75,6 +76,12 @@ if [ "$CUSTOM" = "y" ]; then
     P2P_LADDR=$(prompt_for_port "[p2p] laddr" $P2P_LADDR)
     PROMETHEUS_LISTEN_ADDR=$(prompt_for_port "prometheus_listen_addr" $PROMETHEUS_LISTEN_ADDR)
 fi
+
+# Client.toml
+sed -i "/^node/ s/\(node = \".*\):\([0-9]*\)/\1:$((RPC_LADDR + INCREMENT))/" $CONFIG_PATH/client.toml
+
+echo "Port has been replaced in $CONFIG_PATH/client.toml"
+echo ""
 
 sed -i "/^proxy_app/ s/\(proxy_app = \".*\):\([0-9]*\)/\1:$((PROXY_APP + INCREMENT))/" $CONFIG_PATH/config.toml
 sed -i "/^\[rpc\]/,/\[.*\]/ s/\(laddr = \".*\):\([0-9]*\)/\1:$((RPC_LADDR + INCREMENT))/" $CONFIG_PATH/config.toml

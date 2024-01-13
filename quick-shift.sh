@@ -38,10 +38,12 @@ JSON_RPC_WS_ADDRESS=8546
 JSON_RPC_METRICS_ADDRESS=6065
 
 # Create a backup
+cp $CONFIG_PATH/client.toml $CONFIG_PATH/client.toml.bak
 cp $CONFIG_PATH/config.toml $CONFIG_PATH/config.toml.bak
 cp $CONFIG_PATH/app.toml $CONFIG_PATH/app.toml.bak
 
 # Shift ports
+sed -i "/^node/ s/\(node = \".*\):\([0-9]*\)/\1:$((RPC_LADDR + INCREMENT))/" $CONFIG_PATH/client.toml
 sed -i "/^proxy_app/ s/\(proxy_app = \".*\):\([0-9]*\)/\1:$((PROXY_APP + INCREMENT))/" $CONFIG_PATH/config.toml
 sed -i "/^\[rpc\]/,/\[.*\]/ s/\(laddr = \".*\):\([0-9]*\)/\1:$((RPC_LADDR + INCREMENT))/" $CONFIG_PATH/config.toml
 sed -i "/^pprof_laddr/ s/\(pprof_laddr = \".*\):\([0-9]*\)/\1:$((PPROF_LADDR + INCREMENT))/" $CONFIG_PATH/config.toml
