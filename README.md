@@ -1,12 +1,12 @@
 # Port Shifter
 
-A port replacer (or resetter) for app.toml and config.toml files, used in Tendermint or CometBFT-based protocols.
+A port replacer (or resetter) for the configuration files used in Tendermint or CometBFT-based protocols.
 
 This has been written by ZENODE and is licensed under the MIT-license (see [LICENSE.md](./LICENSE.md)).
 
 ## Overview
 
-It can get quite time-consuming to replace the ports inside of the `app.toml` or `config.toml` files if you plan on running multiple nodes. This small repository aims to solve this problem by providing two scripts; both having the same purpose of simplifying the process of replacing the port values.
+It can get quite time-consuming to replace the ports inside of the `app.toml`, `config.toml` and `client.toml` files if you plan on running multiple nodes. This small repository aims to solve this problem by providing two scripts; both having the same purpose of simplifying the process of replacing the port values.
 
 ### 1. [shift-wizard.sh](shift-wizard.sh)
 
@@ -17,7 +17,7 @@ This script can be run using:
 ```
 sh shift-wizard.sh <path_to_config_dir>
 ```
-> <path_to_config_dir> can either be an absolute or relative path towards the directory containing the `app.toml` and `config.toml` files.
+> <path_to_config_dir> can either be an absolute or relative path towards the directory containing the `app.toml`, `config.toml` and `client.toml` files.
 
 > [!TIP]
 > If you made a mess of all your ports, then you can **reset the ports to their default values** by giving it an **increment** of **0**.
