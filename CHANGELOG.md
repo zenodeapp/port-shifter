@@ -1,6 +1,17 @@
 
 # Changelog
 
+## v1.0.1 - 2024-01-13
+
+Minor bugfix and added an enhancement.
+
+### Added
+- [Issue #1](https://github.com/zenodeapp/port-shifter/issues/1); the port value in `client.toml` now gets replaced with the **[rpc] laddr value** _(in both scripts)_.
+- [Issue #1](https://github.com/zenodeapp/port-shifter/issues/1); example `client.toml` file added.
+
+### Bugfix(es)
+- [Issue #2](https://github.com/zenodeapp/port-shifter/issues/2); minor bugfix concerning the .gitignore file. It didn't properly ignore the _.toml.bak_-files.
+
 ## v1.0.0 - 2024-01-10
 
 First release of the **Port Shifter**. This version has mostly been tested with Evmos' and Cronos' config files up till **Cosmos SDK v0.46.15**. The configurations were general enough to conclude that this tool can be use in most Tendermint or CometBFT-based consensus protocols.
@@ -31,4 +42,4 @@ First release of the **Port Shifter**. This version has mostly been tested with 
 
 <p align="right">— ZEN</p>
 <p align="right">Copyright (c) 2024 ZENODE</p>
-<p align="right">Last updated on: <i>2024-01-10 (YYYY-MM-DD)</i></p>
+<p align="right">Last updated on: <i>2024-01-13 (YYYY-MM-DD)</i></p>
